@@ -2,22 +2,16 @@ const User = require('../models/user');
 
 const HttpError = require("../models/http-error");
 
+const fileUpload = require('../middleware/file-upload');
+
 const { validationResult } = require("express-validator");
 
 const bcrypt = require("bcryptjs");
 
-const uuid = require("uuid").v4;
 
-const DUMMY_USERS = [
-  {
-    id: "1",
-    name: "paul",
-    email: "paul@gmail.com",
-    password: "1234567",
-  },
-];
 
 exports.signUp = async(req, res, next) => {
+  
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return next(
@@ -75,7 +69,7 @@ exports.getUsers = async(req, res, next) => {
      try{
 
         const users = await User.find({},'-password');
-        console.log(users)
+        // console.log(users)
 
         if(!users){
             return next( new HttpError('Cound not find users',404));

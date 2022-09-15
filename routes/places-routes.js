@@ -5,6 +5,7 @@ const router = express.Router();
 const isAuth = require('../middleware/is-auth')
 
 const placesControllers = require('../controllers/places-controllers');
+const fileUpload = require('../middleware/file-upload');
 
 router.get('/place/:pid',placesControllers.getPlaceById);
 router.get('/userplaces',isAuth,placesControllers.getUserPlaces);

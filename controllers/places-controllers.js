@@ -27,13 +27,13 @@ exports.getPlaceById = async (req, res, next) => {
 
 exports.getUserPlaces = async (req, res, next) => {
   const userId = req.userId;
-  console.log(userId)
+  // console.log(userId)
 
   try {
     const place = await Place.find({
       creator: mongoose.Types.ObjectId(userId),
     });
-    console.log(place);
+    // console.log(place);
     if (!place) {
       return next(
         new HttpError("Could not find a place for the provided user id.", 404)
@@ -48,13 +48,13 @@ exports.getUserPlaces = async (req, res, next) => {
 };
 exports.getPlaceByUserId = async (req, res, next) => {
   const userId = req.params.uid;
-  console.log(userId)
+  // console.log(userId)
 
   try {
     const place = await Place.find({
       creator: mongoose.Types.ObjectId(userId),
     });
-    console.log(place);
+    // console.log(place);
     if (!place) {
       return next(
         new HttpError("Could not find a place for the provided user id.", 404)
@@ -78,7 +78,7 @@ exports.createPlace = async (req, res, next) => {
     );
   }
   const { title, description, address, creator } = req.body;
-  console.log(req.userId)
+  // console.log(req.userId)
   let coordinates;
   try {
     coordinates = await getCoordsForAddress(address);
@@ -94,9 +94,9 @@ exports.createPlace = async (req, res, next) => {
     const result = await place.save();
 
     const user = await User.findById(userId);
-    console.log(user,'user');
+    // console.log(user,'user');
 
-    user.places.push(result._id);
+    user.places.push(result._id.toString());
 
     user.save();
     //  console.log(user);
@@ -160,7 +160,9 @@ exports.updatePLaceById = async (req, res, next) => {
 exports.deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
   const userId = req.userId;
-  //631ee00f93ad5887243d3fb8
+  //63200721b734a61e487680e4 orrange
+
+  //63200733b734a61e487680e9 mtn
   
   console.log(placeId)
 
@@ -176,15 +178,16 @@ exports.deletePlace = async (req, res, next) => {
       );
     }
 
-   const removedPlace = await Place.findByIdAndRemove(placeId);
-   console.log(removedPlace)
+    await Place.findByIdAndRemove(placeId);
+  
 
     const user = await User.findById(userId);
-
-    user.places = user.places.filter((id) => id != placeId);
-
+   console.log(user)
+    const newArrayOfId =  user.places.filter((id) => id.toString() !== placeId);
+    user.places = newArrayOfId;
+    console.log(newArrayOfId)
     user.save();
-
+   
     res.status(200).json({ message: "deleted with success" });
   } catch (err) {
     const error = new HttpError("Something went wrong could not delete", 500);
