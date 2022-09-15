@@ -36,7 +36,7 @@ exports.signUp = async(req, res, next) => {
         name,
         email,
         password:hashedPw,
-        image:'https://media.cntraveler.com/photos/61eae294c43ef397991bf238/master/w_1920%2Cc_limit/British%2520Virgin%2520Islands_GettyImages-973996210.jpg',
+        image: req.file.path.split('\\').join('/'),
         places:[]
      });
 

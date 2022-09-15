@@ -1,3 +1,4 @@
+const fs = require('fs');
 const Place = require("../models/place");
 const HttpError = require("../models/http-error");
 const { validationResult } = require("express-validator");
@@ -71,6 +72,7 @@ exports.getPlaceByUserId = async (req, res, next) => {
 exports.createPlace = async (req, res, next) => {
   const errors = validationResult(req);
   const userId = req.userId;
+  console.log(req.body)
 
   if (!errors.isEmpty()) {
     return next(
@@ -89,7 +91,7 @@ exports.createPlace = async (req, res, next) => {
       address,
       creator: req.userId,
       image:
-        "https://media.cntraveler.com/photos/61eae294c43ef397991bf238/master/w_1920%2Cc_limit/British%2520Virgin%2520Islands_GettyImages-973996210.jpg",
+      req.file.path.split('\\').join('/'),
     });
     const result = await place.save();
 
@@ -160,11 +162,6 @@ exports.updatePLaceById = async (req, res, next) => {
 exports.deletePlace = async (req, res, next) => {
   const placeId = req.params.pid;
   const userId = req.userId;
-  //63200721b734a61e487680e4 orrange
-
-  //63200733b734a61e487680e9 mtn
-  
-  console.log(placeId)
 
   try {
     const place = await Place.findOne({
@@ -178,7 +175,13 @@ exports.deletePlace = async (req, res, next) => {
       );
     }
 
+    const imagePath = place.image;
+
     await Place.findByIdAndRemove(placeId);
+
+    fs.unlink(imagePath,(err)=>{
+      console.log(err);
+    })
   
 
     const user = await User.findById(userId);
